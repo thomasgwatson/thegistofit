@@ -1,0 +1,143 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: The Gist of it API
+  license:
+    name: MIT
+servers:
+  - url: http://fakeURL.com/v1
+paths:
+  /gist:
+    get:
+      summary: List all gists
+      operationId: listGists
+      tags:
+        - gist
+      responses:
+        200:
+          description: An array of gist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Gists"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Create/update a gist
+      operationId: createGist
+      tags:
+        - gist
+      responses:
+        201:
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /gist/{gistId}:
+    get:
+      summary: Info for a specific gist
+      operationId: showGistById
+      tags:
+        - gist
+      parameters:
+        - name: gistId
+          in: path
+          required: true
+          description: The id of the gist to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Gist"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Gist:
+      required:
+        - gistId
+        - title
+        - versions
+        - accountId
+        - createdOn
+      properties:
+        gistId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        accountId:
+          type: integer
+          format: int64
+        createdOn:
+          type: integer
+          format: int64
+        versions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Version"
+    Gists:
+      type: array
+      items:
+        $ref: "#/components/schemas/Gist"
+    File:
+      required:
+        - fileId
+        - content
+        - fileName
+        - langauge
+        - createdOn
+      properties:
+        fileId:
+          type: integer
+          format: int64
+        content:
+          type: string
+        langauge:
+          type: string
+        fileName:
+          type: string
+        createdOn:
+          type: integer
+          format: int64
+    Version:
+      required:
+        - versionId
+        - files
+        - createdOn
+      properties:
+        versionId:
+          type: integer
+          format: int64
+        createdOn:
+          type: integer
+          format: int64
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/File"
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
