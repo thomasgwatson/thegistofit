@@ -7,6 +7,51 @@ info:
 servers:
   - url: http://fakeURL.com/v1
 paths:
+  /account/{accountId}:
+    get:
+      summary: get account by id
+      description: returns a single account, based on id
+      tags:
+        - account
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: The id of the account to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: A single account payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: upserts account by id
+      description: upserts an account, based on id
+      tags:
+        - account
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: The id of the account to retrieve
+          schema:
+            type: string
+      responses:
+        201:
+          description: Account successfully upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
   /gist:
     get:
       summary: List all gists
@@ -15,25 +60,11 @@ paths:
         - gist
       responses:
         200:
-          description: An array of gist
+          description: An array of gists
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Gists"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      summary: Create/update a gist
-      operationId: createGist
-      tags:
-        - gist
-      responses:
-        201:
-          description: Null response
         default:
           description: unexpected error
           content:
@@ -66,8 +97,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    put:
+      summary: Upsert a gist by id
+      operationId: upsertGist
+      tags:
+        - gist
+      parameters:
+        - name: gistId
+          in: path
+          required: true
+          description: The id of the gist to retrieve
+          schema:
+            type: string
+      responses:
+        201:
+          description: Gist successfully upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Gist"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
+    Account:
+      required:
+        - accountId
+        - name
+        - email
+        - passwordHash
+        - createdOn
+      properties:
+        accountId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        passwordHash:
+          type: string
+        createdOn:
+          type: integer
+          format: int64
     Gist:
       required:
         - gistId
