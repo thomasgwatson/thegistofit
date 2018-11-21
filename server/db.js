@@ -1,9 +1,9 @@
 const knex = require("knex")({
-    client: "pg",
-    connection: {
-        host: "locahost",
-        database: "twatson"
-    }
+  client: "pg",
+  connection: {
+    host: "localhost",
+    database: "twatson"
+  }
 })
 
 module.exports = knex
