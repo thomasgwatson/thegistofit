@@ -1,0 +1,22 @@
+{
+  "name": "gistofit",
+  "version": "0.0.0",
+  "description": "gist service",
+  "main": "index.js",
+  "scripts": {
+    "startServer": "node index.js",
+    "dev": "nodemon --watch ./ ./index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "4.16.4",
+    "knex": "0.15.2",
+    "pg": "7.6.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "nodemon": "^1.18.6"
+  }
+}
