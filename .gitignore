@@ -1,0 +1,15 @@
+*.iml
+.idea/
+
+npm-debug.log
+node_modules
+.DS_Store
+front-end-node/coverage
+front-end-node/server/coverage
+front-end-node/.cache
+xunit.xml
+eslint.xml
+.out
+dist
+target
+
