@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const Promise = require("bluebird")
 const db = require("../../db.js")
+const getFullGist = require("../../models/gist/getFullGist")
 
 router.get("/", function (req, res) {
   db.select().from("gist")
@@ -10,28 +11,19 @@ router.get("/", function (req, res) {
 
 router.get("/:gistId", function(req, res){
   const gistId = req.params.gistId
-  var gist, versions, versionFileIds
-  db.select().from("gist").where("gist_id", gistId)
-    .then((ret) => {
-      gist = ret
-      return db.select().from("version").where("gist_id", gistId)
-    }).then((ret) => {
-      versions = ret
-      versionFileIds = [...versions].map((version) => version.version_id)
-      return db.with("currentFileIds", (qb) => {
-        qb.select("file_id").from("version_file").whereIn("version_id", versionFileIds)
-      }).select()
-        .from("file")
-        .join("currentFileIds", {"file.file_id": "currentFileIds.file_id"})
-    }).then((ret) => {
-      res.send({gist, versions, files: ret})
-    })
+  getFullGist(gistId)
+    .then((ret) => res.send(ret))
 })
 
 router.put("/:gistId", function(req, res){
   // take req.body, parse out gist, version, files
   const {gist, version, files} = req.body
   // console.log(gist, version, files)
+
+  // while a gist may have many versions, each request can ONLY include one version to be inserted at a time
+
+  // validate only one version
+
   db.transaction(function(trx){
     return trx
       .raw(`
@@ -60,14 +52,14 @@ router.put("/:gistId", function(req, res){
         })
       })
       .then(() => {
-        return Promise.map(files, (file) => {
-          // console.log(`version_file insert ${file.file_id}`)
+        return Promise.map(version.fileIds, (fileId) => {
+          // console.log(`version_file insert ${fileId}`)
           return trx
             .raw(`
               INSERT INTO version_file (version_id, file_id)
               VALUES (?, ?)
               ON CONFLICT DO NOTHING
-            `, [version.version_id, file.file_id])
+            `, [version.version_id, fileId])
         })
       })
   })
